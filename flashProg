@@ -1,0 +1,2 @@
+#!/bin/bash
+openocd -f jlink.cfg -f stm32f1x.cfg -c "init" -c "script stm32_flash.tcl"

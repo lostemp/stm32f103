@@ -1,0 +1,51 @@
+###########################################
+
+vpath %.c src src/peripherals
+
+DEVICE_TYPE = STM32F10X_HD
+USE_STDPERIPH_DRIVER = -DUSE_STDPERIPH_DRIVER
+
+# Set the external clock frequency
+HSE_VALUE = 8000000L
+
+TARGET_ARCH = -mcpu=cortex-m3 -mthumb -mlittle-endian
+TARGET_OPTS = -O2 -finline -finline-functions-called-once 
+WARNINGS = -Wall -W -Wshadow -Wwrite-strings -Winline
+INCLUDE_DIRS = -Iinc -Iinc/core -Iinc/peripherals
+F_NO_STRICT_ALIASING = -fno-strict-aliasing
+
+#[OPTIONAL] Uncomment to use the firmware library
+DEFINES = -D$(DEVICE_TYPE) $(USE_STDPERIPH_DRIVER) -DHSE_VALUE=$(HSE_VALUE)
+
+COMPILE_OPTS = $(TARGET_ARCH) $(WARNINGS) $(TARGET_OPTS) $(INCLUDE_DIRS) $(DEFINES) $(F_NO_STRICT_ALIASING)
+
+CC=arm-none-eabi-gcc
+CFLAGS = $(COMPILE_OPTS)
+
+AR=arm-none-eabi-ar
+ARFLAGS = cr
+
+#SRCS  = stm32f429i_discovery.c
+SRCS = misc.c stm32f10x_adc.c stm32f10x_bkp.c stm32f10x_can.c stm32f10x_cec.c \
+	stm32f10x_crc.c stm32f10x_dac.c stm32f10x_dbgmcu.c stm32f10x_dma.c \
+	stm32f10x_exti.c stm32f10x_flash.c stm32f10x_fsmc.c stm32f10x_gpio.c \
+	stm32f10x_i2c.c stm32f10x_iwdg.c stm32f10x_pwr.c stm32f10x_rcc.c \
+	stm32f10x_rtc.c stm32f10x_sdio.c stm32f10x_spi.c stm32f10x_tim.c \
+	stm32f10x_usart.c stm32f10x_wwdg.c
+
+LIB_OUT = libstm32fw.a
+
+LIB_OBJS = $(SRCS:.c=.o)
+
+.PHONY: all
+all: $(LIB_OUT)
+
+%.o : %.c
+	$(CC) $(CFLAGS) -c -o $@ $^
+
+$(LIB_OUT): $(LIB_OBJS)
+	$(AR) $(ARFLAGS) $@ $(LIB_OBJS)
+
+.PHONY: clean
+clean:
+	rm -f $(LIB_OBJS) $(LIB_OUT)
