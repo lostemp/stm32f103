@@ -17,3 +17,5 @@
 *.map
 *.elf
 tags
+cscope.files
+cscope.out

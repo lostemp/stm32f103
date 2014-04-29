@@ -23,146 +23,18 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "hx8347_lcd.h"
-#include "fonts.h"
-//#include "fonts.c"
 
-/** @addtogroup Utilities
-  * @{
-  */ 
-
-/** @addtogroup STM32_EVAL
-  * @{
-  */ 
-
-/** @addtogroup STM3210E_EVAL
-  * @{
-  */
-    
-/** @defgroup STM3210E_EVAL_LCD 
-  * @brief This file includes the LCD driver for AM-240320L8TNQW00H 
-  *        (LCD_ILI9320) and AM-240320LDTNQW00H (LCD_SPFD5408B) Liquid Crystal
-  *        Display Module of STM3210E-EVAL board.
-  * @{
-  */ 
-
-/** @defgroup STM3210E_EVAL_LCD_Private_TypesDefinitions
-  * @{
-  */ 
-typedef struct
-{
-  __IO uint16_t LCD_REG;
-  __IO uint16_t LCD_RAM;
-} LCD_TypeDef;
-/**
-  * @}
-  */ 
-
-
-/** @defgroup STM3210E_EVAL_LCD_Private_Defines
-  * @{
-  */
-/* Note: LCD /CS is CE4 - Bank 4 of NOR/SRAM Bank 1~4 */
-#define LCD_BASE           ((uint32_t)(0x60000000 | 0x0C000000))
-#define LCD                ((LCD_TypeDef *) LCD_BASE)
-#define MAX_POLY_CORNERS   200
-#define POLY_Y(Z)          ((int32_t)((Points + Z)->X))
-#define POLY_X(Z)          ((int32_t)((Points + Z)->Y))              
-
-#define LCD_WriteReg(reg, cmd)  LCD->LCD_REG = reg; LCD->LCD_RAM = cmd;
-#define LCD_WriteRamPre(reg)    LCD->LCD_REG = reg
-#define LCD_WriteRam(data)      LCD->LCD_RAM = data
-
-
-/**
-  * @}
-  */ 
-
-/** @defgroup STM3210E_EVAL_LCD_Private_Macros
-  * @{
-  */
-#define ABS(X)  ((X) > 0 ? (X) : -(X))    
-/**
-  * @}
-  */ 
-  
-/** @defgroup STM3210E_EVAL_LCD_Private_Variables
-  * @{
-  */ 
-static sFONT *LCD_Currentfonts;
-/* Global variables to set the written text color */
-static  __IO uint16_t TextColor = 0x0000, BackColor = 0xFFFF;
-  
-/**
-  * @}
-  */ 
-
-
-/** @defgroup STM3210E_EVAL_LCD_Private_FunctionPrototypes
-  * @{
-  */ 
 #ifndef USE_Delay
 static void delay(vu32 nCount);
 #endif /* USE_Delay*/
-/**
-  * @}
-  */ 
-
-
-/** @defgroup STM3210E_EVAL_LCD_Private_Functions
-  * @{
-  */ 
-
-/**
-  * @brief  DeInitializes the LCD.
-  * @param  None
-  * @retval None
-  */
-void LCD_DeInit(void)
-{ 
-  GPIO_InitTypeDef GPIO_InitStructure;
-
-  /*!< LCD Display Off */
-  LCD_DisplayOff();
-
-  /* BANK 4 (of NOR/SRAM Bank 1~4) is disabled */
-  FSMC_NORSRAMCmd(FSMC_Bank1_NORSRAM4, ENABLE);
-  
-  /*!< LCD_SPI DeInit */
-  FSMC_NORSRAMDeInit(FSMC_Bank1_NORSRAM4);
-   
-  /* Set PD.00(D2), PD.01(D3), PD.04(NOE), PD.05(NWE), PD.08(D13), PD.09(D14),
-     PD.10(D15), PD.14(D0), PD.15(D1) as input floating */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_4 | GPIO_Pin_5 |
-                                GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_14 | 
-                                GPIO_Pin_15;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-  GPIO_Init(GPIOD, &GPIO_InitStructure);
-  /* Set PE.07(D4), PE.08(D5), PE.09(D6), PE.10(D7), PE.11(D8), PE.12(D9), PE.13(D10),
-     PE.14(D11), PE.15(D12) as alternate function push pull */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | 
-                                GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | 
-                                GPIO_Pin_15;
-  GPIO_Init(GPIOE, &GPIO_InitStructure);
-  /* Set PF.00(A0 (RS)) as alternate function push pull */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-  GPIO_Init(GPIOF, &GPIO_InitStructure);
-  /* Set PG.12(NE4 (LCD/CS)) as alternate function push pull - CE3(LCD /CS) */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
-  GPIO_Init(GPIOG, &GPIO_InitStructure); 
-}
 
 /**
   * @brief  Initializes the LCD.
   * @param  None
   * @retval None
   */
-void STM3210E_LCD_Init(void)
+void HX8347_Init(void)
 { 
-	/* Configure the LCD Control pins --------------------------------------------*/
-	LCD_CtrlLinesConfig();
-	/* Configure the FSMC Parallel interface -------------------------------------*/
-	LCD_FSMCConfig();
-
 	_delay_(5); // delay 50 ms
 	
 	// Power ON RESET& Display OFF
@@ -190,7 +62,6 @@ void STM3210E_LCD_Init(void)
 	//For power-supply setting(2)
 	LCD_WriteReg(0x43, 0x0080); //VCOMG="1"
 	_delay_(6);	// delay 60 ms
-
 	
 	//Gamma setting 
 	LCD_WriteReg(0x46, 0x0081);
@@ -265,8 +136,6 @@ void STM3210E_LCD_Init(void)
 	
 	//Display on
 	LCD_WriteReg(0x26, 0x003C); //DTE="1", D[1-0]="11", GON="1"
-
-//	LCD_SetFont(&LCD_DEFAULT_FONT);
 }
 
 /*******************************************************************************
@@ -275,7 +144,7 @@ void STM3210E_LCD_Init(void)
 * Parameters    : None
 * Return        : None
 *******************************************************************************/
-void LCD_LandscapeMode(void)
+void HX8347_LandscapeMode(void)
 {
 	// MY : Page Address Order
 	// MX : Colume Address Order	
@@ -305,7 +174,7 @@ void HX8347_XmirrLandscapeMode(void)
 * Parameters    : None
 * Return        : None
 *******************************************************************************/
-void LCD_YmirrLandscapeMode(void)
+void HX8347_YmirrLandscapeMode(void)
 {          
 	// MY : Page Address Order
 	// MX : Colume Address Order	
@@ -320,7 +189,7 @@ void LCD_YmirrLandscapeMode(void)
 * Parameters    : None
 * Return        : None
 *******************************************************************************/
-void LCD_XYmirrLandscapeMode(void)
+void HX8347_XYmirrLandscapeMode(void)
 {          
 	// MY : Page Address Order
 	// MX : Colume Address Order	
@@ -335,7 +204,7 @@ void LCD_XYmirrLandscapeMode(void)
 * Parameters    : None
 * Return        : None
 *******************************************************************************/
-void LCD_PortraitMode(void)
+void HX8347_PortraitMode(void)
 {
 	// MY : Page Address Order
 	// MX : Colume Address Order	
@@ -350,7 +219,7 @@ void LCD_PortraitMode(void)
 * Parameters    : None
 * Return        : None
 *******************************************************************************/
-void LCD_XmirrPortraitMode(void)
+void HX8347_XmirrPortraitMode(void)
 {
 	// MY : Page Address Order
 	// MX : Colume Address Order	
@@ -365,7 +234,7 @@ void LCD_XmirrPortraitMode(void)
 * Parameters    : None
 * Return        : None
 *******************************************************************************/
-void LCD_YmirrPortraitMode(void)
+void HX8347_YmirrPortraitMode(void)
 {
 	// MY : Page Address Order
 	// MX : Colume Address Order	
@@ -380,7 +249,7 @@ void LCD_YmirrPortraitMode(void)
 * Parameters    : None
 * Return        : None
 *******************************************************************************/
-void LCD_XYmirrPortraitMode(void)
+void HX8347_XYmirrPortraitMode(void)
 {
 	// MY : Page Address Order
 	// MX : Colume Address Order
@@ -389,6 +258,16 @@ void LCD_XYmirrPortraitMode(void)
     LCD_WriteReg(0x16, 0x0008);
 }
 
+/**
+  * @brief  Enables the Display.
+  * @param  None
+  * @retval None
+  */
+void HX8347_DisplayOn(void)
+{
+	/* Display On */
+	LCD_WriteReg(LCD_REG_7, 0x0173); /* 262K color and display ON */
+}
 
 /*******************************************************************************
 * Function Name : void LCD_DisplayOff(void) 
@@ -396,7 +275,7 @@ void LCD_XYmirrPortraitMode(void)
 * Parameters    : None
 * Return        : None
 *******************************************************************************/
-void LCD_DisplayOff(void)
+void HX8347_DisplayOff(void)
 {
 	//Display off
 	LCD_WriteReg(0x26, 0x0038);	//GON = "1", DTE = "1", D[1-0] = "10"
@@ -412,6 +291,30 @@ void LCD_DisplayOff(void)
 	LCD_WriteReg(0x1C, 0x0000); //AP[2-0]="000"
 	LCD_WriteReg(0x1B, 0x0008); //PON="0", DK="1"	
 	LCD_WriteReg(0x43, 0x0000); //VCOMG="1"
+}
+
+/**
+  * @brief  Power on the LCD.
+  * @param  None
+  * @retval None
+  */
+void HX8347_PowerOn(void)
+{
+	/* Power On sequence ---------------------------------------------------------*/
+	LCD_WriteReg(LCD_REG_16, 0x0000); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
+	LCD_WriteReg(LCD_REG_17, 0x0000); /* DC1[2:0], DC0[2:0], VC[2:0] */
+	LCD_WriteReg(LCD_REG_18, 0x0000); /* VREG1OUT voltage */
+	LCD_WriteReg(LCD_REG_19, 0x0000); /* VDV[4:0] for VCOM amplitude*/
+	_delay_(20);                 /* Dis-charge capacitor power voltage (200ms) */
+	LCD_WriteReg(LCD_REG_16, 0x17B0); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
+	LCD_WriteReg(LCD_REG_17, 0x0137); /* DC1[2:0], DC0[2:0], VC[2:0] */
+	_delay_(5);                  /* Delay 50 ms */
+	LCD_WriteReg(LCD_REG_18, 0x0139); /* VREG1OUT voltage */
+	_delay_(5);                  /* Delay 50 ms */
+	LCD_WriteReg(LCD_REG_19, 0x1d00); /* VDV[4:0] for VCOM amplitude */
+	LCD_WriteReg(LCD_REG_41, 0x0013); /* VCM[4:0] for VCOMH */
+	_delay_(5);                  /* Delay 50 ms */
+	LCD_WriteReg(LCD_REG_7, 0x0173);  /* 262K color and display ON */
 }
 
 /*******************************************************************************
@@ -438,229 +341,6 @@ void HX8347_AddrSet(u16 xStart,u16 yStart,u16 xEnd,u16 yEnd)
     LCD_WriteRamPre(LCD_REG_34);
 }
 
-/*******************************************************************************
-* Function Name : void TFT_ImageDraw(u16 xAxis,u16 yAxis,u16 xSize,u16 ySize,const u16 *buffer)
-* Description   : 이미지 TFT LCD에 그리기
-* Parameters    : X시작좌표, Y시작좌표, X끝좌표, Y끝좌표, 이미지
-* Return        : none
-*******************************************************************************/            
-void LCD_ImageDraw(u16 xStart, u16 yStart, u16 xSize, u16 ySize, const u16 *buffer)
-{       
-    u16 x,y,index=0;
-
-    HX8347_AddrSet(xStart,yStart,xStart+xSize-1,yStart+ySize-1);
-    
-    for(y=0; y<ySize; y++)                                                    
-        for(x=0; x<xSize; x++)
-            LCD_WriteRam(buffer[index++]);
-}
-
-
-
-/**
-  * @brief  Sets the LCD Text and Background colors.
-  * @param  _TextColor: specifies the Text Color.
-  * @param  _BackColor: specifies the Background Color.
-  * @retval None
-  */
-void LCD_SetColors(__IO uint16_t _TextColor, __IO uint16_t _BackColor)
-{
-  TextColor = _TextColor; 
-  BackColor = _BackColor;
-}
-
-/**
-  * @brief  Gets the LCD Text and Background colors.
-  * @param  _TextColor: pointer to the variable that will contain the Text 
-            Color.
-  * @param  _BackColor: pointer to the variable that will contain the Background 
-            Color.
-  * @retval None
-  */
-void LCD_GetColors(__IO uint16_t *_TextColor, __IO uint16_t *_BackColor)
-{
-  *_TextColor = TextColor; *_BackColor = BackColor;
-}
-
-/**
-  * @brief  Sets the Text color.
-  * @param  Color: specifies the Text color code RGB(5-6-5).
-  * @retval None
-  */
-void LCD_SetTextColor(__IO uint16_t Color)
-{
-  TextColor = Color;
-}
-
-
-/**
-  * @brief  Sets the Background color.
-  * @param  Color: specifies the Background color code RGB(5-6-5).
-  * @retval None
-  */
-void LCD_SetBackColor(__IO uint16_t Color)
-{
-  BackColor = Color;
-}
-
-/**
-  * @brief  Sets the Text Font.
-  * @param  fonts: specifies the font to be used.
-  * @retval None
-  */
-void LCD_SetFont(sFONT *fonts)
-{
-  LCD_Currentfonts = fonts;
-}
-
-/**
-  * @brief  Gets the Text Font.
-  * @param  None.
-  * @retval the used font.
-  */
-sFONT *LCD_GetFont(void)
-{
-  return LCD_Currentfonts;
-}
-
-
-/**
-  * @brief  Clears the hole LCD.
-  * @param  Color: the color of the background.
-  * @retval None
-  */
-void LCD_Clear(uint16_t Color)
-{
-  uint32_t index = 0;
-  
-  HX8347_AddrSet(0, 0, LCD_PIXEL_WIDTH-1, LCD_PIXEL_HEIGHT-1); 
-  for(index = 0; index < 76800; index++)
-  {
-    LCD->LCD_RAM = Color;
-  }  
-}
-
-/**
-  * @brief  Power on the LCD.
-  * @param  None
-  * @retval None
-  */
-void LCD_PowerOn(void)
-{
-/* Power On sequence ---------------------------------------------------------*/
-  LCD_WriteReg(LCD_REG_16, 0x0000); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
-  LCD_WriteReg(LCD_REG_17, 0x0000); /* DC1[2:0], DC0[2:0], VC[2:0] */
-  LCD_WriteReg(LCD_REG_18, 0x0000); /* VREG1OUT voltage */
-  LCD_WriteReg(LCD_REG_19, 0x0000); /* VDV[4:0] for VCOM amplitude*/
-  _delay_(20);                 /* Dis-charge capacitor power voltage (200ms) */
-  LCD_WriteReg(LCD_REG_16, 0x17B0); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
-  LCD_WriteReg(LCD_REG_17, 0x0137); /* DC1[2:0], DC0[2:0], VC[2:0] */
-  _delay_(5);                  /* Delay 50 ms */
-  LCD_WriteReg(LCD_REG_18, 0x0139); /* VREG1OUT voltage */
-  _delay_(5);                  /* Delay 50 ms */
-  LCD_WriteReg(LCD_REG_19, 0x1d00); /* VDV[4:0] for VCOM amplitude */
-  LCD_WriteReg(LCD_REG_41, 0x0013); /* VCM[4:0] for VCOMH */
-  _delay_(5);                  /* Delay 50 ms */
-  LCD_WriteReg(LCD_REG_7, 0x0173);  /* 262K color and display ON */
-}
-
-
-/**
-  * @brief  Enables the Display.
-  * @param  None
-  * @retval None
-  */
-void LCD_DisplayOn(void)
-{
-  /* Display On */
-  LCD_WriteReg(LCD_REG_7, 0x0173); /* 262K color and display ON */
-}
-
-
-/**
-  * @brief  Configures LCD Control lines (FSMC Pins) in alternate function mode.
-  * @param  None
-  * @retval None
-  */
-void LCD_CtrlLinesConfig(void)
-{
-  GPIO_InitTypeDef GPIO_InitStructure;
-  /* Enable FSMC, GPIOD, GPIOE, GPIOF, GPIOG and AFIO clocks */
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_FSMC, ENABLE);
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD | RCC_APB2Periph_GPIOE |
-                         RCC_APB2Periph_GPIOF | RCC_APB2Periph_GPIOG |
-                         RCC_APB2Periph_AFIO, ENABLE);
-  /* Set PD.00(D2), PD.01(D3), PD.04(NOE), PD.05(NWE), PD.08(D13), PD.09(D14),
-     PD.10(D15), PD.14(D0), PD.15(D1) as alternate function push pull */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_4 | GPIO_Pin_5 |
-                                GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_14 | 
-                                GPIO_Pin_15;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-  GPIO_Init(GPIOD, &GPIO_InitStructure);
-  /* Set PE.07(D4), PE.08(D5), PE.09(D6), PE.10(D7), PE.11(D8), PE.12(D9), PE.13(D10),
-     PE.14(D11), PE.15(D12) as alternate function push pull */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | 
-                                GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | 
-                                GPIO_Pin_15;
-  GPIO_Init(GPIOE, &GPIO_InitStructure);
-  /* Set PF.00(A0 (RS)) as alternate function push pull */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-  GPIO_Init(GPIOF, &GPIO_InitStructure);
-  /* Set PG.12(NE4 (LCD/CS)) as alternate function push pull - CE3(LCD /CS) */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
-  GPIO_Init(GPIOG, &GPIO_InitStructure);
-}
-
-
-/**
-  * @brief  Configures the Parallel interface (FSMC) for LCD(Parallel mode)
-  * @param  None
-  * @retval None
-  */
-void LCD_FSMCConfig(void)
-{
-  FSMC_NORSRAMInitTypeDef  FSMC_NORSRAMInitStructure;
-  FSMC_NORSRAMTimingInitTypeDef  p;
-/*-- FSMC Configuration ------------------------------------------------------*/
-/*----------------------- SRAM Bank 4 ----------------------------------------*/
-  /* FSMC_Bank1_NORSRAM4 configuration */
-  p.FSMC_AddressSetupTime = 1;
-  p.FSMC_AddressHoldTime = 0;
-  p.FSMC_DataSetupTime = 5;
-  p.FSMC_BusTurnAroundDuration = 0;
-  p.FSMC_CLKDivision = 0;
-  p.FSMC_DataLatency = 0;
-  p.FSMC_AccessMode = FSMC_AccessMode_B;
-  /* Color LCD configuration ------------------------------------
-     LCD configured as follow:
-        - Data/Address MUX = Disable
-        - Memory Type = SRAM
-        - Data Width = 16bit
-        - Write Operation = Enable
-        - Extended Mode = Enable
-        - Asynchronous Wait = Disable */
-  FSMC_NORSRAMInitStructure.FSMC_Bank = FSMC_Bank1_NORSRAM4;
-  FSMC_NORSRAMInitStructure.FSMC_DataAddressMux = FSMC_DataAddressMux_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_MemoryType = FSMC_MemoryType_SRAM;
-  FSMC_NORSRAMInitStructure.FSMC_MemoryDataWidth = FSMC_MemoryDataWidth_16b;
-  FSMC_NORSRAMInitStructure.FSMC_BurstAccessMode = FSMC_BurstAccessMode_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_AsynchronousWait = FSMC_AsynchronousWait_Disable;  
-  FSMC_NORSRAMInitStructure.FSMC_WaitSignalPolarity = FSMC_WaitSignalPolarity_Low;
-  FSMC_NORSRAMInitStructure.FSMC_WrapMode = FSMC_WrapMode_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_WaitSignalActive = FSMC_WaitSignalActive_BeforeWaitState;
-  FSMC_NORSRAMInitStructure.FSMC_WriteOperation = FSMC_WriteOperation_Enable;
-  FSMC_NORSRAMInitStructure.FSMC_WaitSignal = FSMC_WaitSignal_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_ExtendedMode = FSMC_ExtendedMode_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_WriteBurst = FSMC_WriteBurst_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_ReadWriteTimingStruct = &p;
-  FSMC_NORSRAMInitStructure.FSMC_WriteTimingStruct = &p;
-  FSMC_NORSRAMInit(&FSMC_NORSRAMInitStructure);  
-  /* BANK 4 (of NOR/SRAM Bank 1~4) is enabled */
-  FSMC_NORSRAMCmd(FSMC_Bank1_NORSRAM4, ENABLE);
-}
-
-
 #ifndef USE_Delay
 /**
   * @brief  Inserts a delay time.
@@ -675,24 +355,5 @@ static void delay(vu32 nCount)
   }
 }
 #endif /* USE_Delay*/
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
-  
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
-  
-/**
-  * @}
-  */  
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

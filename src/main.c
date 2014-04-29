@@ -113,17 +113,29 @@ int main(void)
 
 	/* Initialize the LCD */
 	STM3210E_LCD_Init();
-	LCD_Clear(LCD_COLORBLACK);
+	HX8347_Init();
 
-	// Set landscape mode
-	LCD_LandscapeMode();
+	HX8347_DisplayOff();
+	Delay(100);
+	Delay(100);
+	Delay(100);
 
-	// Set the LCD Text Color                                                    
-	LCD_SetTextColor(LCD_COLORWHITE);                                           
-	//LCD_ImageDraw(0,0,96,120,TaeYeonIcon);
-	//LCD_DisplayStringLine(LCD_LINE_0, (uint8_t *)MESSAGE1);                      
-	//LCD_DisplayStringLine(LCD_LINE_1, (uint8_t *)MESSAGE2);                      
-	//LCD_DisplayStringLine(LCD_LINE_2, (uint8_t *)MESSAGE3);
+	HX8347_PowerOn();
+	HX8347_DisplayOn();
+
+
+
+//	LCD_Clear(LCD_COLORBLACK);
+//
+//	// Set landscape mode
+//	LCD_LandscapeMode();
+//
+//	// Set the LCD Text Color                                                    
+//	LCD_SetTextColor(LCD_COLORWHITE);                                           
+//	//LCD_ImageDraw(0,0,96,120,TaeYeonIcon);
+//	//LCD_DisplayStringLine(LCD_LINE_0, (uint8_t *)MESSAGE1);                      
+//	//LCD_DisplayStringLine(LCD_LINE_1, (uint8_t *)MESSAGE2);                      
+//	//LCD_DisplayStringLine(LCD_LINE_2, (uint8_t *)MESSAGE3);
 
 
 	if((Status = SD_Init()) != SD_OK) {
@@ -164,16 +176,16 @@ int main(void)
  *         */
 void NVIC_Configuration(void)
 {
-	  NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
 
-		/* Configure the NVIC Preemption Priority Bits */
-		NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+	/* Configure the NVIC Preemption Priority Bits */
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 
-		NVIC_InitStructure.NVIC_IRQChannel = SDIO_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-		NVIC_Init(&NVIC_InitStructure);
+	NVIC_InitStructure.NVIC_IRQChannel = SDIO_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 }
 
 void Delay(__IO uint32_t nTime)
@@ -197,11 +209,7 @@ void TimingDelay_Decrement(void)
 
 DWORD get_fattime (void)
 {
-	  DWORD res;
-
-		  res = 0;
-
-			  return res;
+	return 0;
 }
 
 /**

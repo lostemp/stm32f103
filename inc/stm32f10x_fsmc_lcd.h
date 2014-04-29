@@ -1,10 +1,11 @@
 /**
   ******************************************************************************
-  * @file    SysTick/TimeBase/main.h 
+  * @file    stm3210e_eval_lcd.h
   * @author  MCD Application Team
-  * @version V3.5.0
-  * @date    08-April-2011
-  * @brief   Header for main.c module
+  * @version V4.5.0
+  * @date    07-March-2011
+  * @brief   This file contains all the functions prototypes for the stm3210e_eval_lcd
+  *          firmware driver.
   ******************************************************************************
   * @attention
   *
@@ -16,30 +17,29 @@
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
   * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
-  ******************************************************************************
+  ******************************************************************************  
   */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __STM32F10x_FSMC_LCD_H
+#define __STM32F10x_FSMC_LCD_H
+
+#ifdef __cplusplus
+ extern "C" {
+#endif 
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
-#include "stm32f1_s133.h"
-#include "stm32_sdio_sd.h"
-#include "stm32f10x_fsmc_lcd.h"
-#include "hx8347_lcd.h"
 
-#include "ff.h"
+void STM3210E_LCD_DeInit(void);  
+void STM3210E_LCD_Init(void);
+void LCD_CtrlLinesConfig(void);
+void LCD_FSMCConfig(void);
 
-#include <stdio.h>
-#include <string.h>
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
-void TimingDelay_Decrement(void);
+#ifdef __cplusplus
+}
+#endif
 
-#endif /* __MAIN_H */
-
+#endif /* __STM3210E_EVAL_LCD_H */
+  
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

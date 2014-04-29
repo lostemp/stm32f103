@@ -30,34 +30,14 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
-#include "fonts.h"
 
-/** @addtogroup Utilities
-  * @{
-  */
-
-/** @addtogroup STM32_EVAL
-  * @{
-  */ 
-
-/** @addtogroup STM3210E_EVAL
-  * @{
-  */
-    
-/** @addtogroup STM3210E_EVAL_LCD
-  * @{
-  */ 
-
-/** @defgroup STM3210E_EVAL_LCD_Exported_Types
-  * @{
-  */
-typedef struct 
+typedef struct
 {
-  int16_t X;
-  int16_t Y;
-} Point, * pPoint;   
-/**
-  * @}
+  __IO uint16_t LCD_REG;
+  __IO uint16_t LCD_RAM;
+} LCD_TypeDef;
+
+/* @}
   */ 
 
 /** @defgroup STM3210E_EVAL_LCD_Exported_Constants
@@ -192,293 +172,178 @@ typedef struct
 #define LCD_REG_193           0xC1
 #define LCD_REG_229           0xE5
 
-/** 
-  * @brief  LCD color  
-  */ 
-#define LCD_COLOR_RED		        		0xF800
-#define LCD_COLOR_CRIMSON		    		0xD8A7
-#define LCD_COLOR_FIREBRICK	    			0xB104
-#define LCD_COLORMAROON		    			0x8000
-#define LCD_COLORDARKRED		    		0x8800
-#define LCD_COLORBROWN		    			0xA145
-#define LCD_COLORSIENNA		    			0xA285
-#define LCD_COLORSADDLEBROWN				0x8A22
-#define LCD_COLORINDIANRED					0xCAEB
-#define LCD_COLORROSYBROWN					0xBC71
-#define LCD_COLORLIGHTCORAL					0xF410
-#define LCD_COLORSALMON		    			0xFC0E
-#define LCD_COLORDARKSALMON					0xECAF
-#define LCD_COLORCORAL		    			0xFBEA
-#define LCD_COLORTOMATO		    			0xFB08
-#define LCD_COLORSANDYBROWN					0xF52C
-#define LCD_COLORLIGHTSALMON				0xFD0F
-#define LCD_COLORPERU		    			0xCC27
-#define LCD_COLORCHOCOLATE					0xD343
-#define LCD_COLORORANGERED					0xFA20
-#define LCD_COLORORANGE		    			0xFD20
-#define LCD_COLORDARKORANGE					0xFC60
-#define LCD_COLORTAN		        		0xD5B1
-#define LCD_COLORPEACHPUFF					0xFED7
-#define LCD_COLORBISQUE		    			0xFF38
-#define LCD_COLORMOCCASIN					0xFF36
-#define LCD_COLORNAVAJOWHITE				0xFEF5
-#define LCD_COLORWHEAT		    			0xF6F6
-#define LCD_COLORBURLYWOOD					0xDDD0
-#define LCD_COLORDARKGOLDENROD				0xBC21
-#define LCD_COLORGOLDENROD					0xDD24
-#define LCD_COLORGOLD		    			0xFEA0
-#define LCD_COLORYELLOW		    			0xFFE0
-#define LCD_COLORLIGHTGOLDENRODYELLOW		0xFFDA
-#define LCD_COLORPALEGOLDENROD				0xEF55
-#define LCD_COLORKHAKI		    			0xF731
-#define LCD_COLORDARKKHAKI					0xBDAD
-#define LCD_COLORLAWNGREEN					0x7FE0
-#define LCD_COLORGREENYELLOW				0xAFE5
-#define LCD_COLORCHARTREUSE					0x7FE0
-#define LCD_COLORLIME		    			0x07E0
-#define LCD_COLORLIMEGREEN					0x3666
-#define LCD_COLORYELLOWGREEN				0x9E66
-#define LCD_COLOROLIVE		    			0x8400
-#define LCD_COLOROLIVEDRAB					0x6C64
-#define LCD_COLORDARKOLIVEGREEN				0x5345
-#define LCD_COLORFORESTGREEN				0x2444
-#define LCD_COLORDARKGREEN					0x0320
-#define LCD_COLORGREEN		    			0x0400
-#define LCD_COLORSEAGREEN					0x2C4A
-#define LCD_COLORMEDIUMSEAGREEN				0x3D8E
-#define LCD_COLORDARKSEAGREEN				0x8DF1
-#define LCD_COLORLIGHTGREEN					0x9772
-#define LCD_COLORPALEGREEN					0x9FD3
-#define LCD_COLORSPRINGGREEN				0x07EF
-#define LCD_COLORMEDIUMSPRINGGREEN			0x07D3
-#define LCD_COLORTEAL		    			0x0410
-#define LCD_COLORDARKCYAN					0x0451
-#define LCD_COLORLIGHTSEAGREEN				0x2595
-#define LCD_COLORMEDIUMAQUAMARINE	    	0x6675
-#define LCD_COLORCADETBLUE					0x5CF4
-#define LCD_COLORSTEELBLUE					0x4416
-#define LCD_COLORAQUAMARINE					0x7FFA
-#define LCD_COLORPOWDERBLUE					0xB71C
-#define LCD_COLORPALETURQUOISE				0xAF7D
-#define LCD_COLORLIGHTBLUE					0xAEDC
-#define LCD_COLORLIGHTSTEELBLUE				0xB63B
-#define LCD_COLORSKYBLUE		    		0x867D
-#define LCD_COLORLIGHTSKYBLUE				0x867F
-#define LCD_COLORMEDIUMTURQUOISE			0x4E99
-#define LCD_COLORTURQUOISE					0x471A
-#define LCD_COLORDARKTURQUOISE				0x067A
-#define LCD_COLORAQUA		    			0x07FF
-#define LCD_COLORCYAN		    			0x07FF
-#define LCD_COLORDEEPSKYBLUE				0x05FF
-#define LCD_COLORDODGERBLUE					0x1C9F
-#define LCD_COLORCORNFLOWERBLUE				0x64BD
-#define LCD_COLORROYALBLUE					0x435C
-#define LCD_COLORBLUE		    			0x001F
-#define LCD_COLORMEDIUMBLUE					0x0019
-#define LCD_COLORNAVY		    			0x0010
-#define LCD_COLORDARKBLUE					0x0011
-#define LCD_COLORMIDNIGHTBLUE				0x18CE
-#define LCD_COLORDARKSLATEBLUE				0x49F1
-#define LCD_COLORSLATEBLUE					0x6AD9
-#define LCD_COLORMEDIUMSLATEBLUE			0x7B5D
-#define LCD_COLORMEDIUMPURPLE				0x939B
-#define LCD_COLORDARKORCHID					0x9999
-#define LCD_COLORDARKVIOLET					0x901A
-#define LCD_COLORBLUEVIOLET					0x895C
-#define LCD_COLORMEDIUMORCHID				0xBABA
-#define LCD_COLORPLUM		    			0xDD1B
-#define LCD_COLORLAVENDER					0xE73F
-#define LCD_COLORTHISTLE		    		0xDDFB
-#define LCD_COLORORCHID		    			0xDB9A
-#define LCD_COLORVIOLET		    			0xEC1D
-#define LCD_COLORINDIGO		    			0x4810
-#define LCD_COLORDARKMAGENTA				0x8811
-#define LCD_COLORPURPLE		    			0x8010
-#define LCD_COLORMEDIUMVIOLETRED			0xC0B0
-#define LCD_COLORDEEPPINK					0xF8B2
-#define LCD_COLORFUCHSIA		    		0xF81F
-#define LCD_COLORMAGENTA		    		0xF81F
-#define LCD_COLORHOTPINK		    		0xFB56
-#define LCD_COLORPALEVIOLETRED				0xDB92
-#define LCD_COLORLIGHTPINK					0xFDB8
-#define LCD_COLORPINK		    			0xFE19
-#define LCD_COLORMISTYROSE					0xFF3C
-#define LCD_COLORBLANCHEDALMOND				0xFF59
-#define LCD_COLORLIGHTYELLOW				0xFFFC
-#define LCD_COLORCORNSILK					0xFFDB
-#define LCD_COLORANTIQUEWHITE				0xFF5A
-#define LCD_COLORPAPAYAWHIP					0xFF7A
-#define LCD_COLORLEMONCHIFFON				0xFFD9
-#define LCD_COLORBEIGE		    			0xF7BB
-#define LCD_COLORLINEN		    			0xFF9C
-#define LCD_COLOROLDLACE		    		0xFFBC
-#define LCD_COLORLIGHTCYAN					0xE7FF
-#define LCD_COLORALICEBLUE					0xF7DF
-#define LCD_COLORWHITESMOKE					0xF7BE
-#define LCD_COLORLAVENDERBLUSH				0xFF9E
-#define LCD_COLORFLORALWHITE				0xFFDE
-#define LCD_COLORMINTCREAM					0xF7FF
-#define LCD_COLORGHOSTWHITE					0xFFDF
-#define LCD_COLORHONEYDEW					0xF7FE
-#define LCD_COLORSEASHELL					0xFFBD
-#define LCD_COLORIVORY		    			0xFFFE
-#define LCD_COLORAZURE		    			0xF7FF
-#define LCD_COLORSNOW		    			0xFFDF
-#define LCD_COLORWHITE		    			0xFFFF
-#define LCD_COLORGAINSBORO					0xDEFB
-#define LCD_COLORLIGHTGREY					0xD69A
-#define LCD_COLORSILVER		    			0xC618
-#define LCD_COLORDARKGRAY					0xAD55
-#define LCD_COLORLIGHTSLATEGRAY				0x7453
-#define LCD_COLORSLATEGRAY					0x7412
-#define LCD_COLORGRAY		    			0x8410
-#define LCD_COLORDIMGRAY		    		0x6B4D
-#define LCD_COLORDARKSLATEGRAY				0x2A69
-#define LCD_COLORBLACK		    			0x0000
+#define LCD_PIXEL_WIDTH				240
+#define LCD_PIXEL_HEIGHT			320
+#define LCD_PIXEL_TOTAL				76800
+
+/* Note: LCD /CS is CE4 - Bank 4 of NOR/SRAM Bank 1~4 */
+#define LCD_BASE           ((uint32_t)(0x60000000 | 0x0C000000))
+#define LCD                ((LCD_TypeDef *) LCD_BASE)
+
+#define LCD_WriteReg(reg, cmd)  LCD->LCD_REG = reg; LCD->LCD_RAM = cmd;
+#define LCD_WriteRamPre(reg)    LCD->LCD_REG = reg
+#define LCD_WriteRam(data)      LCD->LCD_RAM = data
+
+// 16bit Color Table
+#define RGB_RED		        0xF800
+#define RGB_CRIMSON		    0xD8A7
+#define RGB_FIREBRICK	    0xB104
+#define RGB_MAROON		    0x8000
+#define RGB_DARKRED		    0x8800
+#define RGB_BROWN		    0xA145
+#define RGB_SIENNA		    0xA285
+#define RGB_SADDLEBROWN		0x8A22
+#define RGB_INDIANRED		0xCAEB
+#define RGB_ROSYBROWN		0xBC71
+#define RGB_LIGHTCORAL		0xF410
+#define RGB_SALMON		    0xFC0E
+#define RGB_DARKSALMON		0xECAF
+#define RGB_CORAL		    0xFBEA
+#define RGB_TOMATO		    0xFB08
+#define RGB_SANDYBROWN		0xF52C
+#define RGB_LIGHTSALMON		0xFD0F
+#define RGB_PERU		    0xCC27
+#define RGB_CHOCOLATE		0xD343
+#define RGB_ORANGERED		0xFA20
+#define RGB_ORANGE		    0xFD20
+#define RGB_DARKORANGE		0xFC60
+#define RGB_TAN		        0xD5B1
+#define RGB_PEACHPUFF		0xFED7
+#define RGB_BISQUE		    0xFF38
+#define RGB_MOCCASIN		0xFF36
+#define RGB_NAVAJOWHITE		0xFEF5
+#define RGB_WHEAT		    0xF6F6
+#define RGB_BURLYWOOD		0xDDD0
+#define RGB_DARKGOLDENROD	0xBC21
+#define RGB_GOLDENROD		0xDD24
+#define RGB_GOLD		    0xFEA0
+#define RGB_YELLOW		    0xFFE0
+#define RGB_LIGHTGOLDENRODYELLOW		0xFFDA
+#define RGB_PALEGOLDENROD	0xEF55
+#define RGB_KHAKI		    0xF731
+#define RGB_DARKKHAKI		0xBDAD
+#define RGB_LAWNGREEN		0x7FE0
+#define RGB_GREENYELLOW		0xAFE5
+#define RGB_CHARTREUSE		0x7FE0
+#define RGB_LIME		    0x07E0
+#define RGB_LIMEGREEN		0x3666
+#define RGB_YELLOWGREEN		0x9E66
+#define RGB_OLIVE		    0x8400
+#define RGB_OLIVEDRAB		0x6C64
+#define RGB_DARKOLIVEGREEN	0x5345
+#define RGB_FORESTGREEN		0x2444
+#define RGB_DARKGREEN		0x0320
+#define RGB_GREEN		    0x0400
+#define RGB_SEAGREEN		0x2C4A
+#define RGB_MEDIUMSEAGREEN	0x3D8E
+#define RGB_DARKSEAGREEN	0x8DF1
+#define RGB_LIGHTGREEN		0x9772
+#define RGB_PALEGREEN		0x9FD3
+#define RGB_SPRINGGREEN		0x07EF
+#define RGB_MEDIUMSPRINGGREEN		0x07D3
+#define RGB_TEAL		    0x0410
+#define RGB_DARKCYAN		0x0451
+#define RGB_LIGHTSEAGREEN	0x2595
+#define RGB_MEDIUMAQUAMARINE	    0x6675
+#define RGB_CADETBLUE		0x5CF4
+#define RGB_STEELBLUE		0x4416
+#define RGB_AQUAMARINE		0x7FFA
+#define RGB_POWDERBLUE		0xB71C
+#define RGB_PALETURQUOISE	0xAF7D
+#define RGB_LIGHTBLUE		0xAEDC
+#define RGB_LIGHTSTEELBLUE	0xB63B
+#define RGB_SKYBLUE		    0x867D
+#define RGB_LIGHTSKYBLUE	0x867F
+#define RGB_MEDIUMTURQUOISE	0x4E99
+#define RGB_TURQUOISE		0x471A
+#define RGB_DARKTURQUOISE	0x067A
+#define RGB_AQUA		    0x07FF
+#define RGB_CYAN		    0x07FF
+#define RGB_DEEPSKYBLUE		0x05FF
+#define RGB_DODGERBLUE		0x1C9F
+#define RGB_CORNFLOWERBLUE	0x64BD
+#define RGB_ROYALBLUE		0x435C
+#define RGB_BLUE		    0x001F
+#define RGB_MEDIUMBLUE		0x0019
+#define RGB_NAVY		    0x0010
+#define RGB_DARKBLUE		0x0011
+#define RGB_MIDNIGHTBLUE	0x18CE
+#define RGB_DARKSLATEBLUE	0x49F1
+#define RGB_SLATEBLUE		0x6AD9
+#define RGB_MEDIUMSLATEBLUE	0x7B5D
+#define RGB_MEDIUMPURPLE	0x939B
+#define RGB_DARKORCHID		0x9999
+#define RGB_DARKVIOLET		0x901A
+#define RGB_BLUEVIOLET		0x895C
+#define RGB_MEDIUMORCHID	0xBABA
+#define RGB_PLUM		    0xDD1B
+#define RGB_LAVENDER		0xE73F
+#define RGB_THISTLE		    0xDDFB
+#define RGB_ORCHID		    0xDB9A
+#define RGB_VIOLET		    0xEC1D
+#define RGB_INDIGO		    0x4810
+#define RGB_DARKMAGENTA		0x8811
+#define RGB_PURPLE		    0x8010
+#define RGB_MEDIUMVIOLETRED	0xC0B0
+#define RGB_DEEPPINK		0xF8B2
+#define RGB_FUCHSIA		    0xF81F
+#define RGB_MAGENTA		    0xF81F
+#define RGB_HOTPINK		    0xFB56
+#define RGB_PALEVIOLETRED	0xDB92
+#define RGB_LIGHTPINK		0xFDB8
+#define RGB_PINK		    0xFE19
+#define RGB_MISTYROSE		0xFF3C
+#define RGB_BLANCHEDALMOND	0xFF59
+#define RGB_LIGHTYELLOW		0xFFFC
+#define RGB_CORNSILK		0xFFDB
+#define RGB_ANTIQUEWHITE	0xFF5A
+#define RGB_PAPAYAWHIP		0xFF7A
+#define RGB_LEMONCHIFFON	0xFFD9
+#define RGB_BEIGE		    0xF7BB
+#define RGB_LINEN		    0xFF9C
+#define RGB_OLDLACE		    0xFFBC
+#define RGB_LIGHTCYAN		0xE7FF
+#define RGB_ALICEBLUE		0xF7DF
+#define RGB_WHITESMOKE		0xF7BE
+#define RGB_LAVENDERBLUSH	0xFF9E
+#define RGB_FLORALWHITE		0xFFDE
+#define RGB_MINTCREAM		0xF7FF
+#define RGB_GHOSTWHITE		0xFFDF
+#define RGB_HONEYDEW		0xF7FE
+#define RGB_SEASHELL		0xFFBD
+#define RGB_IVORY		    0xFFFE
+#define RGB_AZURE		    0xF7FF
+#define RGB_SNOW		    0xFFDF
+#define RGB_WHITE		    0xFFFF
+#define RGB_GAINSBORO		0xDEFB
+#define RGB_LIGHTGREY		0xD69A
+#define RGB_SILVER		    0xC618
+#define RGB_DARKGRAY		0xAD55
+#define RGB_LIGHTSLATEGRAY	0x7453
+#define RGB_SLATEGRAY		0x7412
+#define RGB_GRAY		    0x8410
+#define RGB_DIMGRAY		    0x6B4D
+#define RGB_DARKSLATEGRAY	0x2A69
+#define RGB_BLACK		    0x0000	
 
 
-/** 
-  * @brief  LCD Lines depending on the chosen fonts.  
-  */
-#define LCD_LINE_0               LINE(0)
-#define LCD_LINE_1               LINE(1)
-#define LCD_LINE_2               LINE(2)
-#define LCD_LINE_3               LINE(3)
-#define LCD_LINE_4               LINE(4)
-#define LCD_LINE_5               LINE(5)
-#define LCD_LINE_6               LINE(6)
-#define LCD_LINE_7               LINE(7)
-#define LCD_LINE_8               LINE(8)
-#define LCD_LINE_9               LINE(9)
-#define LCD_LINE_10              LINE(10)
-#define LCD_LINE_11              LINE(11)
-#define LCD_LINE_12              LINE(12)
-#define LCD_LINE_13              LINE(13)
-#define LCD_LINE_14              LINE(14)
-#define LCD_LINE_15              LINE(15)
-#define LCD_LINE_16              LINE(16)
-#define LCD_LINE_17              LINE(17)
-#define LCD_LINE_18              LINE(18)
-#define LCD_LINE_19              LINE(19)
-#define LCD_LINE_20              LINE(20)
-#define LCD_LINE_21              LINE(21)
-#define LCD_LINE_22              LINE(22)
-#define LCD_LINE_23              LINE(23)
-#define LCD_LINE_24              LINE(24)
-#define LCD_LINE_25              LINE(25)
-#define LCD_LINE_26              LINE(26)
-#define LCD_LINE_27              LINE(27)
-#define LCD_LINE_28              LINE(28)
-#define LCD_LINE_29              LINE(29)
+void HX8347_Init(void);
+void HX8347_LandscapeMode(void);
+void HX8347_XmirrLandscapeMode(void);
+void HX8347_YmirrLandscapeMode(void);
+void HX8347_XYmirrLandscapeMode(void);
+void HX8347_PortraitMode(void);
+void HX8347_XmirrPortraitMode(void);
+void HX8347_YmirrPortraitMode(void);
+void HX8347_XYmirrPortraitMode(void);
+void HX8347_DisplayOn(void);
+void HX8347_DisplayOff(void);
+void HX8347_PowerOn(void);
+void HX8347_AddrSet(u16 xStart, u16 yStart, u16 xEnd, u16 End);
 
-/** 
-  * @brief LCD default font 
-  */ 
-#define LCD_DEFAULT_FONT         Font16x24
-
-/** 
-  * @brief  LCD Direction  
-  */ 
-#define LCD_DIR_HORIZONTAL       0x0000
-#define LCD_DIR_VERTICAL         0x0001
-
-/** 
-  * @brief  LCD Size (Width and Height)  
-  */ 
-#define LCD_PIXEL_WIDTH          240
-#define LCD_PIXEL_HEIGHT         320
-
-/**
-  * @}
-  */ 
-
-/** @defgroup STM3210E_EVAL_LCD_Exported_Macros
-  * @{
-  */ 
-#define ASSEMBLE_RGB(R, G, B)    ((((R)& 0xF8) << 8) | (((G) & 0xFC) << 3) | (((B) & 0xF8) >> 3))  
-/**
-  * @}
-  */ 
-
-/** @defgroup STM3210E_EVAL_LCD_Exported_Functions
-  * @{
-  */ 
-/** @defgroup  
-  * @{
-  */ 
-void LCD_DeInit(void);  
-void STM3210E_LCD_Init(void);
-void LCD_LandscapeMode(void);
-void LCD_YmirrLandscapeMode(void);
-void LCD_XYmirrLandscapeMode(void);
-void LCD_PortraitMode(void);
-void LCD_XmirrPortraitMode(void);
-void LCD_YmirrPortraitMode(void);
-void LCD_XYmirrPortraitMode(void);
-void HX8347_AddrSet(u16 xStart,u16 yStart,u16 xEnd,u16 yEnd);
-void LCD_ImageDraw(u16 xStart,u16 yStart,u16 xSize,u16 ySize,const u16 *buffer);
-
-void LCD_DisplayOff(void);
-
-
-void LCD_SetColors(__IO uint16_t _TextColor, __IO uint16_t _BackColor); 
-void LCD_GetColors(__IO uint16_t *_TextColor, __IO uint16_t *_BackColor);
-void LCD_SetTextColor(__IO uint16_t Color);
-void LCD_SetBackColor(__IO uint16_t Color);
-void LCD_Clear(uint16_t Color);
-void LCD_SetFont(sFONT *fonts);
-sFONT *LCD_GetFont(void);
-
-/**
-  * @}
-  */ 
-
-/** @defgroup  
-  * @{
-  */ 
-//void LCD_WriteReg(uint8_t LCD_Reg, uint16_t LCD_RegValue);
-//uint16_t LCD_ReadReg(uint8_t LCD_Reg);
-//void LCD_WriteRAM_Prepare(void);
-//void LCD_WriteRAM(uint16_t RGB_Code);
-//uint16_t LCD_ReadRAM(void);
-
-void LCD_PowerOn(void);
-void LCD_DisplayOn(void);
-/**
-  * @}
-  */ 
-
-/** @defgroup  
-  * @{
-  */ 
-void LCD_CtrlLinesConfig(void);
-void LCD_FSMCConfig(void);
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */    
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM3210E_EVAL_LCD_H */
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */
-  
+#endif 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
