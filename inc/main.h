@@ -29,6 +29,7 @@
 #include "stm32_sdio_sd.h"
 #include "stm32f10x_fsmc_lcd.h"
 #include "hx8347_lcd.h"
+#include "tgui.h"
 
 #include "ff.h"
 
@@ -39,6 +40,7 @@
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 void TimingDelay_Decrement(void);
+void Delay(__IO uint32_t nTime);
 
 #endif /* __MAIN_H */
 

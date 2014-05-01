@@ -323,7 +323,7 @@ void HX8347_PowerOn(void)
 * Parameters    : XÁÂÇ¥,YÁÂÇ¥
 * Return        : None
 *******************************************************************************/
-void HX8347_AddrSet(u16 xStart,u16 yStart,u16 xEnd,u16 yEnd)
+void HX8347_AddrSet(uint16_t xStart,uint16_t yStart,uint16_t xEnd,uint16_t yEnd)
 {
 	// ½ÃÀÛ À§Ä¡ ¼³Á¤
     LCD_WriteReg(0x02,xStart>>8);

@@ -40,7 +40,7 @@ SD_Error Status = SD_OK;
 FATFS FatFs;
 
 /* Private function prototypes -----------------------------------------------*/
-void Delay(__IO uint32_t nTime);
+//void Delay(__IO uint32_t nTime);
 void NVIC_Configuration(void);
 DWORD get_fattime (void);
 
@@ -103,7 +103,6 @@ int main(void)
 	printf(" %s", MESSAGE2);
 	printf(" %s\n\r", MESSAGE3);
 
-
 	/* Add your application code here */
 	if (SysTick_Config(SystemCoreClock / 1000))
 	{
@@ -115,13 +114,20 @@ int main(void)
 	STM3210E_LCD_Init();
 	HX8347_Init();
 
-	HX8347_DisplayOff();
-	Delay(100);
-	Delay(100);
-	Delay(100);
+	LCD_Color(0, 0, LCD_PIXEL_WIDTH, LCD_PIXEL_HEIGHT, RGB_NAVY);
+	LCD_PutStr(0, 0, MESSAGE1);
+	LCD_PutStr(0, 1, MESSAGE2);
+	LCD_PutStr(0, 2, MESSAGE3);
+	
+//	HX8347_DisplayOff();
+//	Delay(100);
+//	Delay(100);
+//	Delay(100);
+//
+//	HX8347_PowerOn();
+//	HX8347_DisplayOn();
 
-	HX8347_PowerOn();
-	HX8347_DisplayOn();
+	
 
 
 

@@ -1,28 +1,15 @@
-//#include "fonts.h"
+#include "hx8347_lcd.h"
+
+#include "tgui.h"
 #include "kssm_table.h"
 #include "pilgi16x16_kor.h"
 #include "font8x16_ascii.h"
 
-#include "hx8347_lcd.h"
-
-
-//static sFONT *LCD_Currentfonts;
-
 /* Global variables to set the written text color */
 static  __IO uint16_t TextColor = RGB_BLACK, BackColor = RGB_WHITE;
 
-extern const uint8_t Font8x16Ascii[128][16];
-
 void GetFontBuffer(uint16_t code, uint8_t *FontBuffer);
 uint16_t KsToKssm(uint16_t code);
-
-//void LCD_Clear(uint16_t Color)
-//{
-//  uint32_t index = 0;
-//
-//  HX8347_AddrSet(0, 0, LCD_PIXEL_WIDTH-1, LCD_PIXEL_HEIGHT-1); 
-//  for(index = 0; index < LCD_PIXEL_TOTAL; index++)	LCD->LCD_RAM = Color;
-//}
 
 void LCD_SetFontColor(uint16_t fgColor, uint16_t bgColor)
 {
@@ -68,7 +55,7 @@ void LCD_PutStr(uint16_t xAxis, uint16_t yAxis, uint8_t *pStr)
 * Parameters    : X좌표, Y좌표, 완성형코드, color
 * Return        : none
 *******************************************************************************/
-void LCD_PutCharKor(u16 xStart,u16 yStart,u16 code)
+void LCD_PutCharKor(uint16_t xStart,uint16_t yStart,uint16_t code)
 {
 	s16 x,y;
     u8 FontBuffer[32];
@@ -92,7 +79,7 @@ void LCD_PutCharKor(u16 xStart,u16 yStart,u16 code)
 * Parameters    : X좌표, Y좌표, 아스키코드, color
 * Return        : none
 *******************************************************************************/
-void LCD_PutCharEng(u16 xStart,u16 yStart,u8 ascii)
+void LCD_PutCharEng(uint16_t xStart,uint16_t yStart,uint8_t ascii)
 {
 	s16 x,y;               
 
@@ -106,6 +93,59 @@ void LCD_PutCharEng(u16 xStart,u16 yStart,u8 ascii)
             else LCD_WriteRam(BackColor);
         }
     }
+}
+
+/*******************************************************************************
+* Function Name : void TFT_ImageDraw(u16 xAxis,u16 yAxis,u16 xSize,u16 ySize,const u16 *buffer)
+* Description   : 이미지 TFT LCD에 그리기
+* Parameters    : X시작좌표, Y시작좌표, X끝좌표, Y끝좌표, 이미지
+* Return        : none
+*******************************************************************************/
+void LCD_ImageDraw(uint16_t xStart,uint16_t yStart,uint16_t xSize,uint16_t ySize,const uint16_t *buffer)
+{
+    u16 x,y,index=0;
+
+    HX8347_AddrSet(xStart,yStart,xStart+xSize-1,yStart+ySize-1);
+
+    for(y=0; y<ySize; y++)
+        for(x=0; x<xSize; x++)
+            LCD_WriteRam(buffer[index++]);
+}
+
+/*******************************************************************************
+* Function Name : void TFT_Full8Color(u16 xSize,u16 ySize,u16 msec)
+* Description   : 풀사이즈 8색 그리기
+* Parameters    : delay time
+* Return        : none
+*******************************************************************************/
+void LCD_Full8Color(uint16_t xSize,uint16_t ySize,uint16_t msec)
+{
+    //8color draw data
+    const u16 ColorData[8] = {RGB_BLACK,RGB_WHITE,RGB_RED,RGB_GREEN,RGB_BLUE,RGB_YELLOW,RGB_VIOLET,RGB_ORANGE};
+    u16 i;
+
+    for(i=0;i<8;i++)
+    {
+        LCD_Color(0,0,xSize,ySize,ColorData[i]);
+        _delay_(msec);
+    }
+}
+
+/*******************************************************************************
+* Function Name : void TFT_Color(u16 xStart,u16 yStart,u16 xSize,u16 ySize,u16 color)
+* Description   : TFT LCD 일정영역 색 그리기 
+* Parameters    : X시작좌표, Y시작좌표, X끝좌표, Y끝좌표, color
+* Return        : none
+*******************************************************************************/
+void LCD_Color(uint16_t xStart,uint16_t yStart,uint16_t xSize,uint16_t ySize,uint16_t color)
+{
+    u16 x,y;
+
+    HX8347_AddrSet(xStart,yStart,xStart+xSize-1,yStart+ySize-1);
+
+    for(y=0; y<ySize; y++)
+        for(x=0; x<xSize; x++)
+            LCD_WriteRam(color);
 }
 
 /*******************************************************************************
