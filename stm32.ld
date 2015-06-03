@@ -71,6 +71,10 @@ SECTIONS
 		_etext = .;
 		_sidata = _etext; /* Uused by the startup in order to initialize the .data secion */
 	} >FLASH
+
+    __exidx_start = .;
+    .ARM.exidx : { *(.ARM.exidx* .gnu.linkonce.armexidx.*) }
+    __exidx_end = .;
     
 	/* 
 	* This is the initialized data section. It is stored in RAM but the initial values

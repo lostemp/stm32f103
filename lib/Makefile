@@ -21,7 +21,8 @@ CC=arm-none-eabi-gcc
 CFLAGS = $(COMPILE_OPTS)
 
 AR=arm-none-eabi-ar
-ARFLAGS = ar -mcpu=cortex-m3
+###ARFLAGS = -mcpu=cortex-m3
+###ARFLAGS = ar -mcpu=cortex-m3
 
 LIB_OUT = libstm32fw.a
 
